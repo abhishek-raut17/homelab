@@ -3,17 +3,17 @@
 # Root Module Variables
 #
 # Variables:
-#   - project_name
-#   - region
-#   - linode_token
-#   - admin_access_sshkey_path
-#   - cluster_subnet_cidr
-#   - bastion_subnet_cidr
-#   - dmz_subnet_cidr
-#   - k8s_node_type_id
-#   - bastion_node_type_id
-#   - cluster_node_img
-#   - bastion_node_img
+#   - project_name:             Project name
+#   - region:                   Linode region
+#   - linode_token:             Linode API token
+#   - admin_access_sshkey_path: Path to admin's SSH public key
+#   - cluster_subnet_cidr:      CIDR for cluster subnet
+#   - bastion_subnet_cidr:      CIDR for bastion subnet
+#   - dmz_subnet_cidr:          CIDR for DMZ subnet
+#   - k8s_node_type_id:         Compute instance type for cluster nodes
+#   - bastion_node_type_id:     Compute instance type for bastion host
+#   - cluster_node_img:         Talos image label for cluster nodes
+#   - bastion_node_img:         Linux image label for bastion host
 ##################################################################################
 
 ## Project name

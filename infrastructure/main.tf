@@ -41,4 +41,26 @@ provider "linode" {
 }
 
 provider "talos" {}
+
 # ------------------------------------------------------------------------------
+# Admin SSH Key: Import admin's SSH public key for secure access to bastion host
+# ------------------------------------------------------------------------------
+resource "linode_sshkey" "admin_access_sshkey" {
+  label   = "${var.project_name}-admin-access-sshkey"
+  ssh_key = chomp(file("${var.admin_access_sshkey_path}"))
+}
+
+# ------------------------------------------------------------------------------
+# Network Module: Core networking setup (VPC, subnets)
+# ------------------------------------------------------------------------------
+module "network" {
+  source       = "./modules/network"
+  project_name = var.project_name
+  region       = var.region
+
+  cluster_subnet_cidr = var.cluster_subnet_cidr
+  bastion_subnet_cidr = var.bastion_subnet_cidr
+  dmz_subnet_cidr     = var.dmz_subnet_cidr
+
+  providers = { linode = linode }
+}
