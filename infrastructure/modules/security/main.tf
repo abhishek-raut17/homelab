@@ -91,12 +91,12 @@ resource "linode_firewall" "cluster_fw" {
     action   = "ACCEPT"
     protocol = "UDP"
     ports    = "53"
-    ipv4     = ["0.0.0.0.0/0"]
+    ipv4     = ["0.0.0.0/0"]
   }
 
   # Allow all ICMP outbound to the internet for network diagnostics
   outbound {
-    label    = "allow-icmp-to-internet"
+    label    = "allow-essential-icmp-services"
     action   = "ACCEPT"
     protocol = "ICMP"
     ipv4     = ["0.0.0.0/0"]
@@ -121,7 +121,7 @@ resource "linode_firewall" "bastion_fw" {
     action   = "ACCEPT"
     protocol = "TCP"
     ports    = "2222"
-    ipv4     = ["0.0.0.0.0/0"]
+    ipv4     = ["0.0.0.0/0"]
   }
 
   # Allow specific TCP to cluster subnet for secured maintanance access
@@ -148,12 +148,12 @@ resource "linode_firewall" "bastion_fw" {
     action   = "ACCEPT"
     protocol = "UDP"
     ports    = "53,123"
-    ipv4     = ["0.0.0.0.0/0"]
+    ipv4     = ["0.0.0.0/0"]
   }
 
   # Allow all ICMP outbound to the internet for network diagnostics
   outbound {
-    label    = "allow-icmp-to-internet"
+    label    = "allow-essential-icmp-services"
     action   = "ACCEPT"
     protocol = "ICMP"
     ipv4     = ["0.0.0.0/0"]
@@ -190,13 +190,13 @@ resource "linode_firewall" "dmz_fw" {
     ipv4     = ["0.0.0.0/0"]
   }
 
-  # Allow DNS (UDP) to the internet for name resolution and NTP for time sync
+  # Allow DNS (UDP) to the internet for name resolution
   outbound {
     label    = "allow-essential-udp-services"
     action   = "ACCEPT"
     protocol = "UDP"
-    ports    = "53,123"
-    ipv4     = ["0.0.0.0.0/0"]
+    ports    = "53"
+    ipv4     = ["0.0.0.0/0"]
   }
 
   inbound_policy  = "DROP"
