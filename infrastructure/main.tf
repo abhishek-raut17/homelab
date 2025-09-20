@@ -79,4 +79,25 @@ module "security" {
   providers  = { linode = linode }
   depends_on = [module.network]
 }
+
+# ------------------------------------------------------------------------------
+# Bastion Module: Provision bastion nodes for secured access to cluster
+# ------------------------------------------------------------------------------
+module "bastion" {
+  source       = "./modules/bastion"
+  project_name = var.project_name
+  region       = var.region
+
+  bastion_node_type_id = var.bastion_node_type_id
+  bastion_node_img     = var.bastion_node_img
+
+  bastion_subnet_id = module.network.bastion_subnet_id
+  bastion_fw_id     = module.security.bastion_fw_id
+
+  providers = { linode = linode }
+  depends_on = [
+    module.network,
+    module.security
+  ]
+}
 # ------------------------------------------------------------------------------
