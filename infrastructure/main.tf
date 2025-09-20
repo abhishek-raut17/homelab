@@ -64,3 +64,19 @@ module "network" {
 
   providers = { linode = linode }
 }
+
+# ------------------------------------------------------------------------------
+# Security Module: Security configurations (firewalls, security groups)
+# ------------------------------------------------------------------------------
+module "security" {
+  source       = "./modules/security"
+  project_name = var.project_name
+
+  cluster_subnet_cidr = module.network.cluster_subnet_cidr
+  bastion_subnet_cidr = module.network.bastion_subnet_cidr
+  dmz_subnet_cidr     = module.network.dmz_subnet_cidr
+
+  providers  = { linode = linode }
+  depends_on = [module.network]
+}
+# ------------------------------------------------------------------------------

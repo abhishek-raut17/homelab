@@ -1,10 +1,9 @@
 ##################################################################################
 #
-# Network Module Variables
+# Security Module Variables
 #
 # Variables:
 #   - project_name:             Project name
-#   - region:                   Linode region
 #   - cluster_subnet_cidr:      CIDR for cluster subnet
 #   - bastion_subnet_cidr:      CIDR for bastion subnet
 #   - dmz_subnet_cidr:          CIDR for DMZ subnet
@@ -15,18 +14,6 @@ variable "project_name" {
   description = "Project Name"
   type        = string
   default     = "sigdep"
-}
-
-## Linode Region
-variable "region" {
-  description = "Linode Region"
-  type        = string
-  default     = ""
-
-  validation {
-    condition     = length(var.region) > 0
-    error_message = "Linode region must be provided."
-  }
 }
 
 ## Cluster Subnet CIDR
