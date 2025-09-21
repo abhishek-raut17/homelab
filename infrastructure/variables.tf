@@ -8,7 +8,6 @@
 #   - linode_token:             Linode API token
 #   - admin_access_sshkey_path: Path to admin's SSH public key
 #   - cluster_subnet_cidr:      CIDR for cluster subnet
-#   - bastion_subnet_cidr:      CIDR for bastion subnet
 #   - dmz_subnet_cidr:          CIDR for DMZ subnet
 #   - k8s_node_type_id:         Compute instance type for cluster nodes
 #   - bastion_node_type_id:     Compute instance type for bastion host
@@ -36,36 +35,11 @@ variable "linode_token" {
   }
 }
 
-## Cluster nodes image provider (talos) label
-variable "cluster_node_img" {
-  description = "Talos Image label"
-  type        = string
-  sensitive   = true
-  default     = ""
-
-  validation {
-    condition     = length(var.cluster_node_img) > 0
-    error_message = "Talos Image label must be provided."
-  }
-}
-
-## Bastion nodes image provider (debian12) label
-variable "bastion_node_img" {
-  description = "Linux Image label"
-  type        = string
-  sensitive   = true
-  default     = ""
-
-  validation {
-    condition     = length(var.bastion_node_img) > 0
-    error_message = "Linux Image label must be provided."
-  }
-}
-
 ## Admin SSH Key Path
 variable "admin_access_sshkey_path" {
   description = "Path to the admin's SSH public key"
   type        = string
+  sensitive   = true
   default     = "./keys/sigdep_rsa.pub"
 
   validation {
@@ -95,18 +69,6 @@ variable "cluster_subnet_cidr" {
   validation {
     condition     = length(var.cluster_subnet_cidr) > 0
     error_message = "Cluster subnet CIDR must be provided."
-  }
-}
-
-## Bastion Subnet CIDR
-variable "bastion_subnet_cidr" {
-  description = "CIDR block for the Bastion subnet"
-  type        = string
-  default     = ""
-
-  validation {
-    condition     = length(var.bastion_subnet_cidr) > 0
-    error_message = "Bastion subnet CIDR must be provided."
   }
 }
 
@@ -143,5 +105,30 @@ variable "bastion_node_type_id" {
   validation {
     condition     = length(var.bastion_node_type_id) > 0
     error_message = "Node type must be provided."
+  }
+}
+
+## Cluster nodes image provider (talos) label
+variable "cluster_node_img" {
+  description = "Talos Image label"
+  type        = string
+  sensitive   = true
+  default     = ""
+
+  validation {
+    condition     = length(var.cluster_node_img) > 0
+    error_message = "Talos Image label must be provided."
+  }
+}
+
+## Bastion nodes image provider (debian12) label
+variable "bastion_node_img" {
+  description = "Linux Image label"
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = length(var.bastion_node_img) > 0
+    error_message = "Linux Image label must be provided."
   }
 }

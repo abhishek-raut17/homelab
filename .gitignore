@@ -192,6 +192,8 @@ dist
 # .tfstate files
 *.tfstate
 *.tfstate.*
+*.tfplan
+*.tfplan.*
 *.terraform.lock.hcl
 *.terraform.lock.hcl.*
 

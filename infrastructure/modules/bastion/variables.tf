@@ -5,10 +5,11 @@
 # Variables:
 #   - project_name:             Project name
 #   - region:                   Linode region
-#   - admin_access_sshkey_path: Path to admin's SSH public key
+#   - admin_access_sshkey:      Admin's SSH public key
 #   - bastion_node_type_id:     Compute instance type for bastion host
 #   - bastion_node_img:         Linux image label for bastion host
-#   - bastion_fw_id:            Firewall ID to attach on bastion host
+#   - dmz_subnet_id:            ID for DMZ Subnet
+#   - dmz_fw_id:                Firewall ID to attach to DMZ subnet nodes
 ##################################################################################
 
 ## Project name
@@ -22,7 +23,6 @@ variable "project_name" {
 variable "bastion_node_img" {
   description = "Linux Image label"
   type        = string
-  sensitive   = true
   default     = ""
 
   validation {
@@ -32,15 +32,10 @@ variable "bastion_node_img" {
 }
 
 ## Admin SSH Key Path
-variable "admin_access_sshkey_path" {
-  description = "Path to the admin's SSH public key"
+variable "admin_access_sshkey" {
+  description = "Admin's SSH public key"
   type        = string
-  default     = "./keys/sigdep_rsa.pub"
-
-  validation {
-    condition     = length(var.admin_access_sshkey_path) > 0
-    error_message = "Path to the admin's SSH public key must be provided."
-  }
+  sensitive   = true
 }
 
 ## Linode Region
@@ -67,26 +62,26 @@ variable "bastion_node_type_id" {
   }
 }
 
-## Bastion Subnet CIDR
-variable "bastion_subnet_id" {
-  description = "Subnet ID for the Bastion subnet"
+## DMZ Subnet CIDR
+variable "dmz_subnet_id" {
+  description = "Subnet ID for the DMZ subnet"
   type        = string
   default     = ""
 
   validation {
-    condition     = length(var.bastion_subnet_id) > 0
-    error_message = "Bastion subnet ID must be provided."
+    condition     = length(var.dmz_subnet_id) > 0
+    error_message = "DMZ subnet ID must be provided."
   }
 }
 
-## Bastion Subnet firewall ID
-variable "bastion_fw_id" {
-  description = "Firewall ID for the Bastion subnet"
+## DMZ Subnet firewall ID
+variable "dmz_fw_id" {
+  description = "Firewall ID for the DMZ subnet"
   type        = string
   default     = ""
 
   validation {
-    condition     = length(var.bastion_fw_id) > 0
-    error_message = "Firewall ID for bastion subnet must be provided."
+    condition     = length(var.dmz_fw_id) > 0
+    error_message = "Firewall ID for DMZ subnet must be provided."
   }
 }

@@ -47,7 +47,7 @@ provider "talos" {}
 # ------------------------------------------------------------------------------
 resource "linode_sshkey" "admin_access_sshkey" {
   label   = "${var.project_name}-admin-access-sshkey"
-  ssh_key = chomp(file("${var.admin_access_sshkey_path}"))
+  ssh_key = trimspace(chomp(file("${var.admin_access_sshkey_path}")))
 }
 
 # ------------------------------------------------------------------------------
@@ -59,45 +59,60 @@ module "network" {
   region       = var.region
 
   cluster_subnet_cidr = var.cluster_subnet_cidr
-  bastion_subnet_cidr = var.bastion_subnet_cidr
   dmz_subnet_cidr     = var.dmz_subnet_cidr
 
   providers = { linode = linode }
 }
 
 # ------------------------------------------------------------------------------
-# Security Module: Security configurations (firewalls, security groups)
-# ------------------------------------------------------------------------------
-module "security" {
-  source       = "./modules/security"
-  project_name = var.project_name
-
-  cluster_subnet_cidr = module.network.cluster_subnet_cidr
-  bastion_subnet_cidr = module.network.bastion_subnet_cidr
-  dmz_subnet_cidr     = module.network.dmz_subnet_cidr
-
-  providers  = { linode = linode }
-  depends_on = [module.network]
-}
-
-# ------------------------------------------------------------------------------
 # Bastion Module: Provision bastion nodes for secured access to cluster
 # ------------------------------------------------------------------------------
-module "bastion" {
-  source       = "./modules/bastion"
-  project_name = var.project_name
-  region       = var.region
+# module "bastion" {
+#   source       = "./modules/bastion"
+#   project_name = var.project_name
+#   region       = var.region
 
-  bastion_node_type_id = var.bastion_node_type_id
-  bastion_node_img     = var.bastion_node_img
+#   bastion_node_type_id = var.bastion_node_type_id
+#   bastion_node_img     = var.bastion_node_img
+#   dmz_subnet_id = module.network.dmz_subnet_id
+#   admin_access_sshkey = linode_sshkey.admin_access_sshkey.ssh_key
 
-  bastion_subnet_id = module.network.bastion_subnet_id
-  bastion_fw_id     = module.security.bastion_fw_id
+#   providers = { linode = linode }
+#   depends_on = [
+#     linode_sshkey.admin_access_sshkey,
+#     module.network
+#   ]
+# }
 
-  providers = { linode = linode }
-  depends_on = [
-    module.network,
-    module.security
-  ]
-}
+# ------------------------------------------------------------------------------
+# Compute Module: Provision compute nodes to host k8s cluster
+# ------------------------------------------------------------------------------
+# module "compute" {
+#   source       = "./modules/compute"
+#   project_name = var.project_name
+#   region       = var.region
+
+#   k8s_node_type_id = var.k8s_node_type_id
+#   cluster_node_img = var.cluster_node_img
+#   cluster_subnet_id = module.network.cluster_subnet_id
+
+#   providers = { linode = linode }
+#   depends_on = [
+#     module.network
+#   ]
+# }
+
+# ------------------------------------------------------------------------------
+# Security Module: Security configurations (firewalls, security groups)
+# ------------------------------------------------------------------------------
+# module "security" {
+#   source       = "./modules/security"
+#   project_name = var.project_name
+
+#   cluster_subnet_cidr = module.network.cluster_subnet_cidr
+#   dmz_subnet_cidr     = module.network.dmz_subnet_cidr
+
+#   providers  = { linode = linode }
+#   depends_on = [module.network]
+# }
 # ------------------------------------------------------------------------------

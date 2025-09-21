@@ -10,7 +10,6 @@
 #   - project_name:         Project name
 #   - region:               Linode region
 #   - cluster_subnet_cidr:  CIDR for cluster subnet
-#   - bastion_subnet_cidr:  CIDR for bastion subnet
 #   - dmz_subnet_cidr:      CIDR for DMZ subnet
 #
 # Outputs:
@@ -47,16 +46,7 @@ resource "linode_vpc_subnet" "cluster_subnet" {
 }
 
 # ------------------------------------------------------------------------------
-# Subnet: Bastion Subnet for secure access to cluster resources
-# ------------------------------------------------------------------------------
-resource "linode_vpc_subnet" "bastion_subnet" {
-  label  = "${var.project_name}-bastion-subnet"
-  vpc_id = linode_vpc.vpc.id
-  ipv4   = var.bastion_subnet_cidr
-}
-
-# ------------------------------------------------------------------------------
-# Subnet: DMZ Subnet for public facing (loadbalancer) resources
+# Subnet: DMZ Subnet for public facing (jump proxy) resources
 # ------------------------------------------------------------------------------
 resource "linode_vpc_subnet" "dmz_subnet" {
   label  = "${var.project_name}-dmz-subnet"

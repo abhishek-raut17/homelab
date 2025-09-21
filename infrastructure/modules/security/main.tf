@@ -3,12 +3,11 @@
 # Security Module
 #
 # Provisions core networking resources on Linode:
-#   - Firewalls for cluster and bastion subnets
+#   - Firewalls for cluster and dmz subnets
 #
 # Inputs:
 #   - project_name:         Project name
 #   - cluster_subnet_cidr:  CIDR for cluster subnet
-#   - bastion_subnet_cidr:  CIDR for bastion subnet
 #   - dmz_subnet_cidr:      CIDR for DMZ subnet
 #
 # Outputs:
@@ -33,21 +32,21 @@ resource "linode_firewall" "cluster_fw" {
 
   # Allow specific TCP from bastion subnet for secured maintanance access
   inbound {
-    label    = "allow-tcp-from-bastion-subnet"
-    action   = "ACCEPT"
-    protocol = "TCP"
-    ports    = "6443,50000"
-    ipv4     = [var.bastion_subnet_cidr]
-  }
-
-  # Allow HTTP/S from DMZ subnet (NodeBalancer) to cluster nodes
-  inbound {
     label    = "allow-tcp-from-dmz-subnet"
     action   = "ACCEPT"
     protocol = "TCP"
-    ports    = "80,443"
+    ports    = "6443,50000"
     ipv4     = [var.dmz_subnet_cidr]
   }
+
+  # Allow HTTP/S from NodeBalancer (lb) to cluster nodes
+  # inbound {
+  #   label    = "allow-tcp-from-lb"
+  #   action   = "ACCEPT"
+  #   protocol = "TCP"
+  #   ports    = "80,443"
+  #   ipv4     = [] # Nodebalancer (lb) ipv4
+  # }
 
   # Allow all TCP within the cluster subnet for internal cluster communication
   inbound {
@@ -110,17 +109,17 @@ resource "linode_firewall" "cluster_fw" {
 }
 
 # ------------------------------------------------------------------------------
-# Firewall: Bastion Subnet Firewall for secure access to cluster resources
+# Firewall: DMZ Subnet Firewall for secure access to cluster resources
 # ------------------------------------------------------------------------------
-resource "linode_firewall" "bastion_fw" {
-  label = "${var.project_name}-bastion-subnet-fw"
+resource "linode_firewall" "dmz_fw" {
+  label = "${var.project_name}-dmz-subnet-fw"
 
-  # Allow SSH from the internet to the bastion host on a non-standard port (2222)
+  # Allow SSH from the internet to the bastion host
   inbound {
     label    = "allow-ssh-from-internet"
     action   = "ACCEPT"
     protocol = "TCP"
-    ports    = "2222"
+    ports    = "22"
     ipv4     = ["0.0.0.0/0"]
   }
 
@@ -163,14 +162,14 @@ resource "linode_firewall" "bastion_fw" {
   inbound_policy  = "DROP"
   outbound_policy = "DROP"
 
-  tags = ["bastion", "access"]
+  tags = ["dmz", "access"]
 }
 
 # ------------------------------------------------------------------------------
-# Firewall: DMZ Subnet Firewall for web traffic access to cluster
+# Firewall: Entrypoint loadbalancer Firewall for web traffic access to cluster
 # ------------------------------------------------------------------------------
-resource "linode_firewall" "dmz_fw" {
-  label = "${var.project_name}-dmz-subnet-fw"
+resource "linode_firewall" "lb_fw" {
+  label = "${var.project_name}-entrypoint-lb-fw"
 
   # Allow HTTP/S from the internet to the NodeBalancer in the DMZ
   inbound {
@@ -202,6 +201,6 @@ resource "linode_firewall" "dmz_fw" {
   inbound_policy  = "DROP"
   outbound_policy = "DROP"
 
-  tags = ["nodebalancer", "dmz"]
+  tags = ["nodebalancer", "lb"]
 }
 # ------------------------------------------------------------------------------
